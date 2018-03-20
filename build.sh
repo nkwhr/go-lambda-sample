@@ -1,25 +1,24 @@
 #!/bin/sh
 
-DIR="archive"
+_DEPLOY_DIR="deploy"
+_FUNC_DIR="./src/${NAME}/functions"
 
-[ -d ${DIR} ] || mkdir ${DIR}
+[ -d ${_DEPLOY_DIR} ] || mkdir ${_DEPLOY_DIR}
 
-for F in $(ls -1 "src/${NAME}" | grep -v vendor); do
-    [ "$(file -b src/${NAME}/${F})" = "directory" ] || continue
-
-    GOOS=linux GOARCH=amd64 go build -o "bin/${F}" "./src/${NAME}/${F}"
+for F in $(ls -1 "${_FUNC_DIR}"); do
+    GOOS=linux GOARCH=amd64 go build -o "bin/${F}" "${_FUNC_DIR}/${F}"
     if [ $? -ne 0 ]; then
         echo "failed to build binary. function: ${F}"
         continue
     fi
 
-    echo "successfully built. function: ${F}"
+    echo "successfully built function: ${F}"
 
-    (cd bin && zip "../${DIR}/${F}.zip" ${F} >/dev/null)
+    (cd bin && zip "../${_DEPLOY_DIR}/${F}.zip" ${F} >/dev/null)
     if [ $? -ne 0 ]; then
         echo "failed to zip binary. function: ${F}"
         continue
     fi
 
-    echo "successfully zipped to ${DIR}/${F}.zip"
+    echo "successfully zipped to ${_DEPLOY_DIR}/${F}.zip"
 done

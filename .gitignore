@@ -1,4 +1,4 @@
-archive
 bin
+deploy
 pkg
 src/golambda/vendor
